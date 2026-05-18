@@ -48,12 +48,14 @@ export default function Navbar({
     : "sticky top-0 z-[9999]";
 
   const bgClass = isLanding
-    ? navOpaque
-      ? "bg-white/95 backdrop-blur-sm border-b border-stone-200 shadow-sm"
-      : "bg-transparent"
-    : "bg-white border-b border-stone-200";
+  ? navOpaque
+    ? "bg-white/95 backdrop-blur-sm border-b border-stone-200 shadow-sm"
+    : "bg-white/30 backdrop-blur-sm"
+  : "bg-white border-b border-stone-200";
 
-  const logoColor = isLanding && !navOpaque ? "text-white" : "text-stone-900";
+  const logoColor = isLanding && !navOpaque
+  ? "text-stone-900 drop-shadow-sm"
+  : "text-stone-900";
   const iconColor =
     isLanding && !navOpaque ? "text-white/80 hover:text-white" : "text-stone-500 hover:text-stone-900";
 
