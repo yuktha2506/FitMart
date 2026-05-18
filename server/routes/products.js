@@ -11,8 +11,22 @@ const verifyAdmin = require('../middleware/verifyAdmin');
  */
 router.get('/', async (req, res) => {
   try {
-    const products = await Product.find().sort({ productId: 1 });
-    res.json(products);
+    const page = parseInt(req.query.page) || 1;
+const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const totalProducts = await Product.countDocuments();
+    const products = await Product.find()
+  .sort({ productId: 1 })
+  .skip(skip)
+  .limit(limit);
+    const totalPages = Math.ceil(totalProducts / limit);
+    res.json({
+  currentPage: page,
+  totalPages,
+  totalProducts,
+  limit,
+  products,
+});
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
