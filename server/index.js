@@ -112,6 +112,26 @@ app.use("/api/payment/verify-payment", paymentLimiter);
 // ── Database ────────────────────────────────────────────────────────────────
 require("./db");
 
+// ── Development: seed a local admin profile if configured ──────────────────
+if (process.env.NODE_ENV !== 'production') {
+  try {
+    const UserProfile = require('./models/UserProfile');
+    const devEmail = process.env.DEV_ADMIN_EMAIL;
+    const devUid = process.env.DEV_ADMIN_UID;
+    if (devEmail || devUid) {
+      const query = devUid ? { userId: devUid } : { email: devEmail };
+      UserProfile.findOne(query).then((u) => {
+        if (!u && devUid) {
+          const up = new UserProfile({ userId: devUid, email: devEmail, name: 'Dev Admin' });
+          up.save().then(() => console.log('Seeded dev admin user profile')).catch(() => { });
+        }
+      }).catch(() => { });
+    }
+  } catch (err) {
+    console.warn('Dev seeding skipped:', err.message);
+  }
+}
+
 // ── Logger (after body parsing, before routes) ──────────────────────────────
 const logger = require("./middleware/logger");
 app.use(logger);
@@ -140,6 +160,11 @@ app.use("/api/payment", require("./routes/payment"));
 
 // Nearby fitness centers
 app.use("/api/fitness-centers", require("./routes/fitnessCenters"));
+
+// Development-only auth helpers
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/api/dev', require('./routes/devAuth'));
+}
 
 // Proxy GitHub stats to avoid client-side rate limits and CORS errors
 app.use("/api/github", require("./routes/github"));

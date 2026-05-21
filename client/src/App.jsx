@@ -26,6 +26,7 @@ import WorkoutTracker from "./pages/TrackerPage";
 import ExercisePage from "./pages/ExercisePage";
 import LegalTerms from "./pages/LegalTerms";
 import LegalPrivacy from "./pages/LegalPrivacy";
+import DevAdminLogin from "./components/DevAdminLogin";
 
 export default function App() {
   return (
@@ -50,6 +51,9 @@ export default function App() {
         <Route path="/privacy-policy" element={<NonAdminRoute><LegalPrivacy /></NonAdminRoute>} />
 
         {/* Admin routes (guarded) */}
+        {import.meta.env.MODE === 'development' && (
+          <Route path="/dev-login" element={<DevAdminLogin />} />
+        )}
         <Route
           path="/admin/dashboard"
           element={
